@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+
+import { useRouter } from "next/navigation";
 import JoinForm from "../../my-components/Form/JoinForm";
 
 interface User {
@@ -12,13 +13,11 @@ interface Room {
 }
 
 const JoinRoomPage = () => {
-  const [user, setUser] = useState<User | null>(null);
-  const [room, setRoom] = useState<Room | null>(null);
+  const router = useRouter();
 
   // This is the onJoin function
   const handleJoin = (userData: User, roomData: Room) => {
-    setUser(userData); // Save user to state
-    setRoom(roomData); // Save room to state
+    router.push(`/workspace/${roomData.code}`);
   };
   return (
     <div>

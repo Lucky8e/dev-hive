@@ -44,7 +44,7 @@ const JoinForm = ({ onJoin }: JoinFormProps) => {
 
       //Create the room
       const roomResult = await createRoom();
-      if (!roomResult.success) {
+      if (!roomResult.success || !roomResult.room) {
         toast.warning("Failed to create room");
         return;
       }
@@ -59,8 +59,10 @@ const JoinForm = ({ onJoin }: JoinFormProps) => {
         return;
       }
 
-      Cookies.set("userId", userId, { expires: 7 });
-      Cookies.set("userName", name.trim(), { expires: 7 });
+      Cookies.set("userId", userId, { expires: 1 });
+      Cookies.set("userName", name.trim(), { expires: 1 });
+      Cookies.set("roomCode", roomResult.room.code, { expires: 1 });
+      Cookies.set("roomId", roomResult.room.id, { expires: 1 });
 
       onJoin(
         { id: userId, name: name.trim() },
@@ -89,7 +91,7 @@ const JoinForm = ({ onJoin }: JoinFormProps) => {
       const userId = nanoid(5);
       //check if room exist
       const roomResult = await getRoomByCode({ roomCode: roomCode });
-      if (!roomResult.success) {
+      if (!roomResult.success || !roomResult.room) {
         toast.error("Room not found. Check the code and try again.");
         return;
       }
@@ -102,8 +104,10 @@ const JoinForm = ({ onJoin }: JoinFormProps) => {
         toast.warning("Failed to join room");
         return;
       }
-      Cookies.set("userId", userId, { expires: 7 });
-      Cookies.set("userName", name.trim(), { expires: 7 });
+      Cookies.set("userId", userId, { expires: 1 });
+      Cookies.set("userName", name.trim(), { expires: 1 });
+      Cookies.set("roomCode", roomResult.room.code, { expires: 1 });
+      Cookies.set("roomId", roomResult.room.id, { expires: 1 });
 
       onJoin(
         { id: userId, name: name.trim() },

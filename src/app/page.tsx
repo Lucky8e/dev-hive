@@ -1,8 +1,12 @@
-import { cookies } from "next/headers";
-import JoinRoomPage from "./join-room/page";
+import getUserAndRoomCode from "@/lib/getUserAndRoomCode";
+import { redirect } from "next/navigation";
 
 const page = async () => {
-  const cookieStore = await cookies();
-  const userId = cookieStore.get("userId");
+  const { userId, roomCode } = await getUserAndRoomCode();
+
+  if (!userId || !roomCode) {
+    redirect("/join-room");
+  }
+  redirect(`/workspace/${roomCode}`);
 };
 export default page;
