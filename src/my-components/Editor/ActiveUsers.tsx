@@ -15,6 +15,7 @@ import { openPeeps } from "@dicebear/collection";
 import { formatDistanceToNowStrict } from "date-fns";
 import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/lib/supabase";
+import { Users } from "lucide-react";
 
 interface ActiveUserProps {
   userId: string;
@@ -60,9 +61,13 @@ const ActiveUsers = ({ userId, roomId }: ActiveUserProps) => {
   }, [roomId]);
 
   return (
-    <div className="h-full overflow-auto bg-background py-4 px-2">
-      <h3 className="text-foreground font-semibold text-lg mb-4 justify-between flex items-center gap-2">
-        <span>Online Users</span>
+    <div className="h-full overflow-auto bg-background py-4 ">
+      {/* -------------------------Header section------------------------- */}
+      <h3 className="text-muted-foreground font-semibold text-lg mb-3 justify-between flex items-center gap-2 px-4">
+        <div className="flex items-center gap-2">
+          <Users />
+          <span>Online Users</span>
+        </div>
         <AvatarGroup>
           {users?.slice(0, 3).map((user) => {
             const avatarUrl = createAvatar(openPeeps, {
@@ -80,36 +85,46 @@ const ActiveUsers = ({ userId, roomId }: ActiveUserProps) => {
           )}
         </AvatarGroup>
       </h3>
-
-      <div className="space-y-2">
+      <Separator className="bg-primary" />
+      {/* -------------------------Participants section------------------------- */}
+      <div className="space-y-2 px-4 mt-3">
         {users?.map((user) => {
           const avatarUrl = createAvatar(openPeeps, {
             seed: user.user_id
           }).toDataUri();
           return (
-            <div key={user.id} className="flex flex-col gap-1">
-              <div className="flex items-center gap-x-2 ">
+            <div key={user.id} className="flex items-center gap-3">
+              {/*-------Avatar-------*/}
+              <div>
                 <Avatar className="overflow-visible" size="default">
                   <AvatarImage src={avatarUrl} alt={user.name} />
                   <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-                  <AvatarBadge className="bg-green-600 dark:bg-green-800" />
+                  <AvatarBadge className="bg-green-600 dark:bg-green-800 animate-pulse" />
                 </Avatar>
-                <span className="text-foreground ml-1 font-medium">
-                  {user.name}
-                </span>
-                {user.user_id === userId && (
-                  <span className="text-primary font-medium">(You)</span>
-                )}
               </div>
-              <span className="text-xs">
-                Joined :{" "}
-                {user.joined_at
-                  ? formatDistanceToNowStrict(new Date(user.joined_at!), {
-                      addSuffix: true
-                    })
-                  : null}
-              </span>
-              <Separator />
+              {/*-------Name and time-------*/}
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-1">
+                  <span className="text-foreground ml-1 font-medium">
+                    {user.name}
+                  </span>
+                  {user.user_id === userId && (
+                    <span className="text-sm text-primary font-medium">
+                      (You)
+                    </span>
+                  )}
+                </div>
+                <div className="flex text-muted-foreground">
+                  <span className="text-xs">
+                    Joined :{" "}
+                    {user.joined_at
+                      ? formatDistanceToNowStrict(new Date(user.joined_at!), {
+                          addSuffix: true
+                        })
+                      : null}
+                  </span>
+                </div>
+              </div>
             </div>
           );
         })}

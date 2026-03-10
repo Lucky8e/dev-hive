@@ -1,6 +1,6 @@
 import { supabase } from "./supabase";
 
-/* --------------------------------Get all teh users------------------------------------ */
+/* --------------------------------Get all the users------------------------------------ */
 export async function getActiveUsers(roomId: string) {
   try {
     const { data, error } = await supabase

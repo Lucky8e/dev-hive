@@ -1,6 +1,6 @@
 "use client";
 import { Black_Ops_One } from "next/font/google";
-import { Download, Play, Settings, Share2 } from "lucide-react";
+import { Download, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenuTrigger,
@@ -10,6 +10,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import { ModeToggle } from "@/components/ui/ModeToggle";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { createAvatar } from "@dicebear/core";
+import { openPeeps } from "@dicebear/collection";
 
 const blackOps = Black_Ops_One({
   subsets: ["latin"],
@@ -19,23 +22,29 @@ const blackOps = Black_Ops_One({
 type OnRunProps = {
   onRun: () => void;
   isRunning: boolean;
+  userId: string;
+  userName: string;
 };
 
-const NavBar = ({ onRun, isRunning }: OnRunProps) => {
+const NavBar = ({ onRun, isRunning, userId, userName }: OnRunProps) => {
   const [language, setLanguage] = useState("javaScript");
+
+  const avatarUrl = createAvatar(openPeeps, {
+    seed: userId
+  }).toDataUri();
   return (
     <div
-      className="fixed top-0 left-1/2 -translate-x-1/2 w-[100%]   
-          h-16 flex bg-black-800 px-2 border-b-2 border-b-purple-950"
+      className="fixed top-0 left-1/2 -translate-x-1/2 w-full  
+          h-16 flex bg-black-800 px-6 border-b-2 border-b-primary"
     >
       <div className="flex items-center justify-between w-full h-full">
         {/* ---------------Left-Section-logo------------------------ */}
         <div className="flex items-center justify-center">
           <h1
             className={`${blackOps.className} text-2xl font-bold bg-linear-to-r
-             from-violet-400
-             via-purple-500
-             to-indigo-600
+             from-purple-500
+             via-indigo-600
+             to-purple-500
                bg-clip-text 
                text-transparent`}
           >
@@ -43,11 +52,14 @@ const NavBar = ({ onRun, isRunning }: OnRunProps) => {
           </h1>
         </div>
         {/* ---------------Center-Section-ChangeLanguage------------------------ */}
-        <div className="flex items-center justify-center gap-2">
+        <div className="flex items-center justify-center gap-1">
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger
+              asChild
+              className="rounded-2xl rounded-r-none  bg-linear-to-l from-violet-800 via-violet-600 to-violet-800"
+            >
               <Button>
-                {language === "javascript" && "🟨 JavaScript"}
+                {language === "javaScript" && "🟨 JavaScript"}
                 {language === "typescript" && "🔷 TypeScript"}
                 {language === "python" && "🐍 Python"}
                 {language === "html" && "🌐 HTML"}
@@ -63,21 +75,34 @@ const NavBar = ({ onRun, isRunning }: OnRunProps) => {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Button onClick={onRun} disabled={isRunning}>
-            <Play className="size-4" />
+          <Button
+            onClick={onRun}
+            disabled={isRunning}
+            className="rounded-2xl rounded-l-none 
+           bg-linear-to-r from-emerald-800 via-emerald-600 to-emerald-800"
+          >
+            <Play className="size-4 fill-current" />
             <span className="text-sm">{isRunning ? "Running" : "Run"}</span>
           </Button>
         </div>
         {/* ---------------Right-Section-{Share,Download,Settings,UserAvatar}------------------------ */}
         <div className="flex items-center gap-2 justify-center">
-          <Button className="bg-none">
-            <Share2 className="size-4 " />
-            <span className="text-sm hidden sm:inline">Share</span>
-          </Button>
-          <Button className="bg-none">
-            <Download className="size-4 " />
+          <Button
+            /* className=" bg-linear-to-r from-orange-800 via-orange-600 to-orange-800" */ variant={
+              "outline"
+            }
+          >
+            <span className="text-xs">Download Code</span>
+            <Download className="size-4" strokeWidth={3} />
           </Button>
           <ModeToggle />
+
+          <div>
+            <Avatar className="overflow-visible" size="default">
+              <AvatarImage src={avatarUrl} alt={userName} />
+              <AvatarFallback>{userName.charAt(0)}</AvatarFallback>
+            </Avatar>
+          </div>
         </div>
       </div>
     </div>

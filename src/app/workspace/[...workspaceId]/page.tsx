@@ -7,10 +7,16 @@ import Terminal from "@/my-components/Editor/Terminal";
 import { runJavaScript } from "@/lib/codeRunner";
 import ActiveUsers from "@/my-components/Editor/ActiveUsers";
 import Cookies from "js-cookie";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { getLatestCode, saveCode } from "@/lib/codeSyncServices";
 import { supabase } from "@/lib/supabase";
 import { debounce } from "lodash";
+import ChatComponent from "@/my-components/Editor/ChatComponent";
+import { Button } from "@/components/ui/button";
+import { Copy, LogOut } from "lucide-react";
+import { toast } from "sonner";
+import { Separator as ShadSeparator } from "@/components/ui/separator";
+import { markUsersInactive } from "@/lib/userPresenceService";
 
 export default function WorkspaceIdPage() {
   const [code, setCode] = useState("console.log('Hello world')");
@@ -18,6 +24,8 @@ export default function WorkspaceIdPage() {
   const [error, setError] = useState<string | null>(null);
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [roomId, setRoomId] = useState<string | null>(null);
+
+  const router = useRouter();
 
   const isRemoteUpdate = useRef(false);
 
@@ -103,20 +111,72 @@ export default function WorkspaceIdPage() {
     setError(result.error);
     setIsRunning(false);
   };
+  //---------------Handle the Leaving Room----------------//
+  const handleLeaveRoom = async () => {
+    if (userId && roomId) {
+      await markUsersInactive(userId, roomId);
+    }
+    //Clear the cookies
+    Cookies.remove("userId");
+    Cookies.remove("userName");
+    Cookies.remove("roomCode");
+    Cookies.remove("roomId");
+
+    router.push("/join-room");
+  };
   return (
     <div className="flex flex-col h-screen w-full">
       <div className="h-16">
-        <NavBar onRun={handleOnRun} isRunning={isRunning} />
+        {userId && userName && (
+          <NavBar
+            onRun={handleOnRun}
+            isRunning={isRunning}
+            userId={userId}
+            userName={userName}
+          />
+        )}
         {/* --------------------Below Navbar content-----------------*/}
       </div>
-      <div className="flex-1 min-h-0 flex px-2">
+      <div className="flex-1 min-h-0 flex">
         {/*------------------- Room Participants Section -------------------------*/}
-        <div className="w-65 bg-black">
-          {roomId && userId && <ActiveUsers roomId={roomId} userId={userId} />}
+        <div className="w-65 flex flex-col bg-black">
+          <div className="flex-1">
+            {roomId && userId && (
+              <ActiveUsers roomId={roomId} userId={userId} />
+            )}
+          </div>
+          <div className="p-3 border-t border-primary bg-background">
+            <p className="text-lg font-bold text-muted-foreground">Room Code</p>
+            <div className="flex items-center justify-between border border-slate-700 p-2 rounded-lg mt-1">
+              <p className="text-sm font-semibold font-mono">{roomCode}</p>
+              <Button
+                size={"icon"}
+                className="border-2 border-green-700 bg-green-600/30 
+                hover:bg-green-300 text-emerald-600 
+                transition-colors duration-300"
+                onClick={() => {
+                  navigator.clipboard.writeText(roomCode ?? "");
+                  toast.success("Room Code Copied");
+                }}
+              >
+                <Copy className="w-4 h-4" />
+              </Button>
+            </div>
+            <ShadSeparator className="mt-2 mb-2" />
+            <Button
+              className="bg-red-500/15 w-full text-red-600
+             hover:bg-red-300 border-2 border-red-700
+              h-12 font-bold transition-colors duration-300"
+              onClick={handleLeaveRoom}
+            >
+              <LogOut className="w-4 h-4" strokeWidth={3} />
+              Leave Room
+            </Button>
+          </div>
         </div>
         {/*------------------ Editor and Terminal Section  ------------------------*/}
 
-        <div className="flex flex-1 min-h-0">
+        <div className="flex flex-1 min-h-0 border-r border-l-2 border-slate-700 ">
           <Group orientation={"vertical"} className="h-full flex-1">
             <Panel defaultSize={"70%"} minSize={"200px"}>
               <MonacoEditor value={code} onChange={handleCodeChange} />
@@ -129,7 +189,15 @@ export default function WorkspaceIdPage() {
         </div>
 
         {/*-------------------- Chat Section------------------- */}
-        <div className="w-100 bg-amber-400"></div>
+        <div className="w-100">
+          {roomId && userId && userName && (
+            <ChatComponent
+              roomId={roomId}
+              userId={userId}
+              userName={userName}
+            />
+          )}
+        </div>
       </div>
     </div>
   );

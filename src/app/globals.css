@@ -53,19 +53,19 @@
 @layer base {
   :root {
     --radius: 0.65rem;
-    --background: oklch(1 0 0);
+    --background: oklch(0.9564 0.0025 48.72);
     --foreground: oklch(0.141 0.005 285.823);
-    --card: oklch(1 0 0);
+    --card: oklch(0.9564 0.0025 48.72);
     --card-foreground: oklch(0.141 0.005 285.823);
-    --popover: oklch(1 0 0);
+    --popover: oklch(0.9564 0.0025 48.72);
     --popover-foreground: oklch(0.141 0.005 285.823);
     --primary: oklch(0.541 0.281 293.009);
     --primary-foreground: oklch(0.969 0.016 293.756);
-    --secondary: oklch(0.967 0.001 286.375);
+    --secondary: (0.89 0.003 48.72);
     --secondary-foreground: oklch(0.21 0.006 285.885);
-    --muted: oklch(0.967 0.001 286.375);
+    --muted: (0.89 0.003 48.72);
     --muted-foreground: oklch(0.552 0.016 285.938);
-    --accent: oklch(0.967 0.001 286.375);
+    --accent: (0.89 0.003 48.72);
     --accent-foreground: oklch(0.21 0.006 285.885);
     --destructive: oklch(0.577 0.245 27.325);
     --border: oklch(0.92 0.004 286.32);
